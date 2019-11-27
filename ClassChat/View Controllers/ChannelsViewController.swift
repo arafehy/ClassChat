@@ -152,14 +152,14 @@ class ChannelsViewController: UITableViewController {
     channels.append(channel)
     channels.sort()
     
-    guard let index = channels.index(of: channel) else {
+    guard let index = channels.firstIndex(of: channel) else {
       return
     }
     tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
   }
   
   private func updateChannelInTable(_ channel: Channel) {
-    guard let index = channels.index(of: channel) else {
+    guard let index = channels.firstIndex(of: channel) else {
       return
     }
     
@@ -168,7 +168,7 @@ class ChannelsViewController: UITableViewController {
   }
   
   private func removeChannelFromTable(_ channel: Channel) {
-    guard let index = channels.index(of: channel) else {
+    guard let index = channels.firstIndex(of: channel) else {
       return
     }
     
@@ -190,6 +190,8 @@ class ChannelsViewController: UITableViewController {
       
     case .removed:
       removeChannelFromTable(channel)
+    @unknown default:
+      break
     }
   }
   
