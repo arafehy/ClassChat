@@ -93,6 +93,30 @@ final class ChatViewController: MessagesViewController {
     messageInputBar.leftStackView.alignment = .center
     messageInputBar.setLeftStackViewWidthConstant(to: 50, animated: false)
     messageInputBar.setStackViewItems([cameraItem], forStack: .left, animated: false) // 3
+    
+    setupCollectionView()
+    inputStyle()
+  }
+  
+  private func setupCollectionView() {
+    guard let flowLayout = messagesCollectionView.collectionViewLayout as? MessagesCollectionViewFlowLayout else {
+      print("Can't get flowLayout")
+      return
+    }
+    if #available(iOS 13.0, *) {
+      flowLayout.collectionView?.backgroundColor = .systemBackground
+    }
+  }
+  
+  func inputStyle() {
+    if #available(iOS 13.0, *) {
+      messageInputBar.inputTextView.textColor = .label
+      messageInputBar.inputTextView.placeholderLabel.textColor = .secondaryLabel
+      messageInputBar.backgroundView.backgroundColor = .systemBackground
+    } else {
+      messageInputBar.inputTextView.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+      messageInputBar.inputTextView.backgroundColor = #colorLiteral(red: 0.9607843137, green: 0.9607843137, blue: 0.9607843137, alpha: 1)
+    }
   }
   
   // MARK: - Actions
@@ -233,7 +257,12 @@ final class ChatViewController: MessagesViewController {
 extension ChatViewController: MessagesDisplayDelegate {
   
   func backgroundColor(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor {
-    return isFromCurrentSender(message: message) ? .primary : .incomingMessage
+    if #available(iOS 13.0, *) {
+      return isFromCurrentSender(message: message) ? UIColor.systemBlue : UIColor.systemYellow
+    } else {
+      // Fallback on earlier versions
+      return isFromCurrentSender(message: message) ? UIColor.systemBlue : UIColor.systemGray
+    }
   }
   
   func shouldDisplayHeader(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> Bool {
