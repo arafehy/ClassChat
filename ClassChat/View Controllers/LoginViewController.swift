@@ -11,11 +11,8 @@ import FirebaseAuth
 
 class LoginViewController: UIViewController {
   
-  @IBOutlet var actionButton: UIButton!
-  @IBOutlet var fieldBackingView: UIView!
+  @IBOutlet var getStartedButton: UIButton!
   @IBOutlet var displayNameField: UITextField!
-  @IBOutlet var actionButtonBackingView: UIView!
-  @IBOutlet var bottomConstraint: NSLayoutConstraint!
   
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
@@ -24,23 +21,17 @@ class LoginViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    fieldBackingView.smoothRoundCorners(to: 8)
-    actionButtonBackingView.smoothRoundCorners(to: actionButtonBackingView.bounds.height / 2)
-    
-    displayNameField.tintColor = .primary
-    displayNameField.addTarget(
-      self,
-      action: #selector(textFieldDidReturn),
-      for: .primaryActionTriggered
-    )
-    
-    registerForKeyboardNotifications()
+    getStartedButton.layer.cornerRadius = 4
+    self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
   }
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    
     displayNameField.becomeFirstResponder()
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    displayNameField.text = ""
   }
   
   // MARK: - Actions
