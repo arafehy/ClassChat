@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 import FirebaseAuth
 
 class LoginViewController: UIViewController {
@@ -14,9 +15,7 @@ class LoginViewController: UIViewController {
   @IBOutlet var getStartedButton: UIButton!
   @IBOutlet var displayNameField: UITextField!
   
-  override var preferredStatusBarStyle: UIStatusBarStyle {
-    return .lightContent
-  }
+  var handle: AuthStateDidChangeListenerHandle?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -40,8 +39,22 @@ class LoginViewController: UIViewController {
     signIn()
   }
   
-  @objc private func textFieldDidReturn() {
-    signIn()
+  func textFieldShouldReturn(textField: UITextField!) -> Bool {
+    self.view.endEditing(true)
+    return true
+  }
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if segue.identifier == "signIn" {
+      handle = Auth.auth().addStateDidChangeListener { (auth, user) in
+        // Handle authenticated state
+        if let user = user {
+          let destinationNavigationController = segue.destination as! UINavigationController
+          let channelsViewController = destinationNavigationController.topViewController as! ChannelsViewController
+          channelsViewController.currentUser = user
+        }
+      }
+    }
   }
   
   // MARK: - Helpers
