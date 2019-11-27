@@ -74,8 +74,6 @@ final class ChatViewController: MessagesViewController {
     navigationItem.largeTitleDisplayMode = .never
     
     maintainPositionOnKeyboardFrameChanged = true
-    messageInputBar.inputTextView.tintColor = .primary
-    messageInputBar.sendButton.setTitleColor(.primary, for: .normal)
     
     messageInputBar.delegate = self
     messagesCollectionView.messagesDataSource = self
@@ -83,7 +81,7 @@ final class ChatViewController: MessagesViewController {
     messagesCollectionView.messagesDisplayDelegate = self
     
     let cameraItem = InputBarButtonItem(type: .system) // 1
-    cameraItem.tintColor = .primary
+    
     cameraItem.image = #imageLiteral(resourceName: "camera")
     cameraItem.addTarget(
       self,
@@ -133,7 +131,7 @@ final class ChatViewController: MessagesViewController {
     messages.append(message)
     messages.sort()
     
-    let isLatestMessage = messages.index(of: message) == (messages.count - 1)
+    let isLatestMessage = messages.firstIndex(of: message) == (messages.count - 1)
     let shouldScrollToBottom = messagesCollectionView.isAtBottom && isLatestMessage
     
     messagesCollectionView.reloadData()
