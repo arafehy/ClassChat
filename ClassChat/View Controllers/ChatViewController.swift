@@ -258,10 +258,19 @@ extension ChatViewController: MessagesDisplayDelegate {
   
   func backgroundColor(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor {
     if #available(iOS 13.0, *) {
-      return isFromCurrentSender(message: message) ? UIColor.systemBlue : UIColor.systemYellow
+      return isFromCurrentSender(message: message) ? UIColor.systemBlue : UIColor.systemGray5
     } else {
       // Fallback on earlier versions
       return isFromCurrentSender(message: message) ? UIColor.systemBlue : UIColor.systemGray
+    }
+  }
+  
+  func textColor(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor {
+    if #available(iOS 13.0, *) {
+      return isFromCurrentSender(message: message) ? UIColor.white : UIColor.label
+    } else {
+      // Fallback on earlier versions
+      return isFromCurrentSender(message: message) ? UIColor.white : UIColor.black
     }
   }
   
