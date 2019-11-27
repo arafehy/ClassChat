@@ -12,12 +12,7 @@ import FirebaseFirestore
 
 class ChannelsViewController: UITableViewController {
   
-  private let toolbarLabel: UILabel = {
-    let label = UILabel()
-    label.textAlignment = .center
-    label.font = UIFont.systemFont(ofSize: 15)
-    return label
-  }()
+  @IBOutlet weak var displayNameLabel: UIBarButtonItem!
   
   private let channelCellIdentifier = "channelCell"
   private var currentChannelAlertController: UIAlertController?
@@ -31,37 +26,19 @@ class ChannelsViewController: UITableViewController {
   private var channels = [Channel]()
   private var channelListener: ListenerRegistration?
   
-  private let currentUser: User
+  var currentUser: User? = Auth.auth().currentUser
   
   deinit {
     channelListener?.remove()
   }
   
-  init(currentUser: User) {
-    self.currentUser = currentUser
-    super.init(style: .grouped)
-    
-    title = "Channels"
-  }
-  
-  required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-  
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    clearsSelectionOnViewWillAppear = true
-    tableView.register(UITableViewCell.self, forCellReuseIdentifier: channelCellIdentifier)
+    navigationController?.navigationBar.prefersLargeTitles = true
+    displayNameLabel.title = AppSettings.displayName
     
-    toolbarItems = [
-      UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(signOut)),
-      UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-      UIBarButtonItem(customView: toolbarLabel),
-      UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-      UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonPressed)),
-    ]
-    toolbarLabel.text = AppSettings.displayName
+    tableView.register(UITableViewCell.self, forCellReuseIdentifier: channelCellIdentifier)
     
     channelListener = channelReference.addSnapshotListener { querySnapshot, error in
       guard let snapshot = querySnapshot else {
@@ -78,12 +55,13 @@ class ChannelsViewController: UITableViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     
+    navigationController?.isNavigationBarHidden = false
     navigationController?.isToolbarHidden = false
   }
   
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-    
+    navigationController?.isNavigationBarHidden = false
     navigationController?.isToolbarHidden = true
   }
   
