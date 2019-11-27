@@ -67,12 +67,24 @@ class ChannelsViewController: UITableViewController {
   
   // MARK: - Actions
   
-  @objc private func signOut() {
+  @IBAction func signOut(_ sender: UIBarButtonItem) {
     let ac = UIAlertController(title: nil, message: "Are you sure you want to sign out?", preferredStyle: .alert)
     ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
     ac.addAction(UIAlertAction(title: "Sign Out", style: .destructive, handler: { _ in
       do {
         try Auth.auth().signOut()
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        if self.navigationController == appDelegate.window?.rootViewController {
+          let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+          let viewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController")
+          appDelegate.window?.rootViewController = viewController
+          appDelegate.window?.makeKeyAndVisible()
+          print("Channels is root view controller")
+        }
+        else {
+          print("Login is root view controller")
+          self.dismiss(animated: true, completion: nil)
+        }
       } catch {
         print("Error signing out: \(error.localizedDescription)")
       }
@@ -80,7 +92,7 @@ class ChannelsViewController: UITableViewController {
     present(ac, animated: true, completion: nil)
   }
   
-  @objc private func addButtonPressed() {
+  @IBAction func addButtonTapped(_ sender: UIBarButtonItem) {
     let ac = UIAlertController(title: "Create a new Channel", message: nil, preferredStyle: .alert)
     ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
     ac.addTextField { field in
@@ -90,7 +102,6 @@ class ChannelsViewController: UITableViewController {
       field.clearButtonMode = .whileEditing
       field.placeholder = "Channel name"
       field.returnKeyType = .done
-      field.tintColor = .primary
     }
     
     let createAction = UIAlertAction(title: "Create", style: .default, handler: { _ in
@@ -211,7 +222,7 @@ extension ChannelsViewController {
   
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let channel = channels[indexPath.row]
-    let vc = ChatViewController(user: currentUser, channel: channel)
+    let vc = ChatViewController(user: currentUser!, channel: channel)
     navigationController?.pushViewController(vc, animated: true)
   }
   
