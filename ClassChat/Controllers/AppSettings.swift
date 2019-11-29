@@ -14,6 +14,9 @@ final class AppSettings {
     case displayName
   }
   
+  /**
+   Variable representing the user's display name
+   */
   static var displayName: String! {
     get {
       return UserDefaults.standard.string(forKey: SettingKey.displayName.rawValue)

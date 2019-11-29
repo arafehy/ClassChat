@@ -38,12 +38,17 @@ final class ChatViewController: MessagesViewController {
     messageListener?.remove()
   }
 
+  /**
+   Initialization function
+    - Parameter user: user to set
+    - Parameter channel: channel to set
+   */
   init(user: User, channel: Channel) {
     self.user = user
     self.channel = channel
     super.init(nibName: nil, bundle: nil)
     
-    title = channel.name
+    title = channel.name    // Set ChatViewController navigation bar title to channel name
   }
   
   required init?(coder aDecoder: NSCoder) {
@@ -71,7 +76,7 @@ final class ChatViewController: MessagesViewController {
       }
     }
     
-    navigationItem.largeTitleDisplayMode = .never
+    navigationItem.largeTitleDisplayMode = .never   // Always show small titles in navigation bar
     
     maintainPositionOnKeyboardFrameChanged = true
     
@@ -80,24 +85,27 @@ final class ChatViewController: MessagesViewController {
     messagesCollectionView.messagesLayoutDelegate = self
     messagesCollectionView.messagesDisplayDelegate = self
     
-    let cameraItem = InputBarButtonItem(type: .system) // 1
+    let cameraItem = InputBarButtonItem(type: .system)  // Create camera button in toolbar
     
-    cameraItem.image = #imageLiteral(resourceName: "camera")
+    cameraItem.image = #imageLiteral(resourceName: "camera")      // Set camera icon
     cameraItem.addTarget(
       self,
-      action: #selector(cameraButtonPressed), // 2
+      action: #selector(cameraButtonPressed),
       for: .primaryActionTriggered
     )
     cameraItem.setSize(CGSize(width: 60, height: 30), animated: false)
     
     messageInputBar.leftStackView.alignment = .center
     messageInputBar.setLeftStackViewWidthConstant(to: 50, animated: false)
-    messageInputBar.setStackViewItems([cameraItem], forStack: .left, animated: false) // 3
+    messageInputBar.setStackViewItems([cameraItem], forStack: .left, animated: false)
     
     setupCollectionView()
     inputStyle()
   }
   
+  /**
+   Function to set background color according to system appearance on iOS 13
+   */
   private func setupCollectionView() {
     guard let flowLayout = messagesCollectionView.collectionViewLayout as? MessagesCollectionViewFlowLayout else {
       print("Can't get flowLayout")
@@ -108,6 +116,9 @@ final class ChatViewController: MessagesViewController {
     }
   }
   
+  /**
+   Function set chat view element colors depending on system appearance on iOS 13
+   */
   func inputStyle() {
     if #available(iOS 13.0, *) {
       messageInputBar.inputTextView.textColor = .label
@@ -136,6 +147,10 @@ final class ChatViewController: MessagesViewController {
   
   // MARK: - Helpers
   
+  /**
+   Function to save a message
+    - Parameter message: The message being saved
+   */
   private func save(_ message: Message) {
     reference?.addDocument(data: message.representation) { error in
       if let e = error {
@@ -147,6 +162,10 @@ final class ChatViewController: MessagesViewController {
     }
   }
   
+  /**
+   Function to add a message to the view
+    - Parameter message: The message being inserted
+   */
   private func insertNewMessage(_ message: Message) {
     guard !messages.contains(message) else {
       return
@@ -167,6 +186,10 @@ final class ChatViewController: MessagesViewController {
     }
   }
   
+  /**
+   Function to handle new messages
+    - Parameter change: The change to handle
+   */
   private func handleDocumentChange(_ change: DocumentChange) {
     guard var message = Message(document: change.document) else {
       return
@@ -195,6 +218,11 @@ final class ChatViewController: MessagesViewController {
     }
   }
   
+  /**
+   Function to upload an image
+   - Parameter image: The image to upload
+   - Parameter channel: The channel to upload the image to
+   */
   private func uploadImage(_ image: UIImage, to channel: Channel, completion: @escaping (URL?) -> Void) {
     guard let channelID = channel.id else {
       completion(nil)
@@ -215,6 +243,10 @@ final class ChatViewController: MessagesViewController {
     }
   }
 
+  /**
+   Function to send a photo
+   - Parameter image: The photo to send
+   */
   private func sendPhoto(_ image: UIImage) {
     isSendingPhoto = true
     
@@ -236,6 +268,10 @@ final class ChatViewController: MessagesViewController {
     }
   }
   
+  /**
+   Function to download an image
+   - Parameter url: URL of image
+   */
   private func downloadImage(at url: URL, completion: @escaping (UIImage?) -> Void) {
     let ref = Storage.storage().reference(forURL: url.absoluteString)
     let megaByte = Int64(1 * 1024 * 1024)
@@ -290,7 +326,7 @@ extension ChatViewController: MessagesDisplayDelegate {
 extension ChatViewController: MessagesLayoutDelegate {
   
   func avatarSize(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGSize {
-    return .zero
+    return .zero  // Hide avatars
   }
   
   func footerViewSize(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGSize {
@@ -353,7 +389,7 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
   func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
     picker.dismiss(animated: true, completion: nil)
     
-    if let asset = info[.phAsset] as? PHAsset { // 1
+    if let asset = info[.phAsset] as? PHAsset {
       let size = CGSize(width: 500, height: 500)
       PHImageManager.default().requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: nil) { result, info in
         guard let image = result else {
@@ -362,7 +398,7 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
         
         self.sendPhoto(image)
       }
-    } else if let image = info[.originalImage] as? UIImage { // 2
+    } else if let image = info[.originalImage] as? UIImage {
       sendPhoto(image)
     }
   }

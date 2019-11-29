@@ -23,10 +23,10 @@ class ChannelsViewController: UITableViewController {
     return db.collection("channels")
   }
   
-  private var channels = [Channel]()
+  private var channels = [Channel]()    // Array of available channels
   private var channelListener: ListenerRegistration?
   
-  var currentUser: User? = Auth.auth().currentUser
+  var currentUser: User? = Auth.auth().currentUser  // Set current user
   
   deinit {
     channelListener?.remove()
@@ -35,8 +35,8 @@ class ChannelsViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    navigationController?.navigationBar.prefersLargeTitles = true
-    displayNameLabel.title = AppSettings.displayName
+    navigationController?.navigationBar.prefersLargeTitles = true   // Set large titles
+    displayNameLabel.title = AppSettings.displayName               // Show display name in toolbar
     
     tableView.register(UITableViewCell.self, forCellReuseIdentifier: channelCellIdentifier)
     
@@ -55,18 +55,21 @@ class ChannelsViewController: UITableViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     
-    navigationController?.isNavigationBarHidden = false
-    navigationController?.isToolbarHidden = false
+    navigationController?.isNavigationBarHidden = false   // Show navigation bar
+    navigationController?.isToolbarHidden = false         // Show toolbar
   }
   
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-    navigationController?.isNavigationBarHidden = false
-    navigationController?.isToolbarHidden = true
+    navigationController?.isNavigationBarHidden = false   // Show navigation bar
+    navigationController?.isToolbarHidden = true          // Hide toolbar to make room for MessageInputBar
   }
   
   // MARK: - Actions
   
+  /**
+   Function to sign out of Firebase and return to LoginViewController
+   */
   @IBAction func signOut(_ sender: UIBarButtonItem) {
     let ac = UIAlertController(title: nil, message: "Are you sure you want to sign out?", preferredStyle: .alert)
     ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
@@ -74,22 +77,21 @@ class ChannelsViewController: UITableViewController {
       do {
         try Auth.auth().signOut()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        if self.navigationController == appDelegate.window?.rootViewController {
+        if self.navigationController == appDelegate.window?.rootViewController {  // ChannelsViewController is root view controller
+          // Create instance of LoginViewController since it hasn't been created
           let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
           let viewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController")
-          appDelegate.window?.rootViewController = viewController
+          appDelegate.window?.rootViewController = viewController   // Make LoginViewController the root view controller
           appDelegate.window?.makeKeyAndVisible()
-          print("Channels is root view controller")
         }
-        else {
-          print("Login is root view controller")
-          self.dismiss(animated: true, completion: nil)
+        else {  // LoginViewController is root view controller
+          self.dismiss(animated: true, completion: nil) // Dismiss ChannelsViewController
         }
       } catch {
         print("Error signing out: \(error.localizedDescription)")
       }
     }))
-    present(ac, animated: true, completion: nil)
+    present(ac, animated: true, completion: nil)    // Show alert
   }
   
   @IBAction func addButtonTapped(_ sender: UIBarButtonItem) {
@@ -127,6 +129,9 @@ class ChannelsViewController: UITableViewController {
   
   // MARK: - Helpers
   
+  /**
+   Function to create a channel
+   */
   private func createChannel() {
     guard let ac = currentChannelAlertController else {
       return
@@ -144,6 +149,10 @@ class ChannelsViewController: UITableViewController {
     }
   }
   
+  /**
+   Function to add a channel to the table view
+   - Parameter channel: The channel to add to the table view
+   */
   private func addChannelToTable(_ channel: Channel) {
     guard !channels.contains(channel) else {
       return
@@ -158,6 +167,10 @@ class ChannelsViewController: UITableViewController {
     tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
   }
   
+  /**
+   Function to update the index of a channel in the table view
+   - Parameter channel: The channel to update
+   */
   private func updateChannelInTable(_ channel: Channel) {
     guard let index = channels.firstIndex(of: channel) else {
       return
@@ -167,6 +180,10 @@ class ChannelsViewController: UITableViewController {
     tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
   }
   
+  /**
+   Function to remove a channel from the table
+   - Parameter channel: The channel to remove
+   */
   private func removeChannelFromTable(_ channel: Channel) {
     guard let index = channels.firstIndex(of: channel) else {
       return
@@ -176,6 +193,10 @@ class ChannelsViewController: UITableViewController {
     tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
   }
   
+  /**
+  Function to handle changes to the channels
+   - Parameter change: The change to handle
+  */
   private func handleDocumentChange(_ change: DocumentChange) {
     guard let channel = Channel(document: change.document) else {
       return

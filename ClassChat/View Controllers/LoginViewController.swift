@@ -20,17 +20,19 @@ class LoginViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    getStartedButton.layer.cornerRadius = 4
+    getStartedButton.layer.cornerRadius = 4   // Round Get Started button corners
+    
+    // Add tap recognizer to hide keyboard when tapping the view
     self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
   }
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    displayNameField.becomeFirstResponder()
+    displayNameField.becomeFirstResponder()   // Open keyboard and make display name text field active when Login view appears
   }
   
   override func viewWillAppear(_ animated: Bool) {
-    displayNameField.text = ""
+    displayNameField.text = ""    // Reset display name text field
   }
   
   // MARK: - Actions
@@ -39,11 +41,18 @@ class LoginViewController: UIViewController {
     signIn()
   }
   
+  /**
+   Function to end editing on all text fields
+   */
   func textFieldShouldReturn(textField: UITextField!) -> Bool {
     self.view.endEditing(true)
     return true
   }
   
+  /**
+   Function to pass current user to ChannelsViewController
+   - Parameter segue: The segue to call this function
+   */
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if segue.identifier == "signIn" {
       handle = Auth.auth().addStateDidChangeListener { (auth, user) in
@@ -59,17 +68,23 @@ class LoginViewController: UIViewController {
   
   // MARK: - Helpers
   
+  /**
+   Function for signing in anonymously with Firebase using the user given display name
+   */
   private func signIn() {
-    guard let name = displayNameField.text, !name.isEmpty else {
-      showMissingNameAlert()
+    guard let name = displayNameField.text, !name.isEmpty else {  // If display name field is empty
+      showMissingNameAlert()    // Show alert
       return
     }
     
-    displayNameField.resignFirstResponder()
-    AppSettings.displayName = name
-    Auth.auth().signInAnonymously(completion: nil)
+    displayNameField.resignFirstResponder()   // Stop editing field and hide keyboard
+    AppSettings.displayName = name            // Store display name in UserDefaults
+    Auth.auth().signInAnonymously(completion: nil)    // Sign in anonymously
   }
   
+  /**
+   Function to show an alert if the display name field is empty when trying to sign in
+   */
   private func showMissingNameAlert() {
     let ac = UIAlertController(title: "Display Name Required", message: "Please enter a display name.", preferredStyle: .alert)
     ac.addAction(UIAlertAction(title: "Okay", style: .default, handler: { _ in

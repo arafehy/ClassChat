@@ -10,6 +10,9 @@ import UIKit
 
 extension UIImage {
   
+  /**
+   Variable to set an image to a safe upload size
+   */
   var scaledToSafeUploadSize: UIImage? {
     let maxImageSideLength: CGFloat = 480
     
@@ -20,6 +23,11 @@ extension UIImage {
     return image(scaledTo: newImageSize)
   }
   
+  /**
+   Function for drawing an image
+   - Parameter size: The size of the image
+   - Returns: The image to draw
+   */
   func image(scaledTo size: CGSize) -> UIImage? {
     defer {
       UIGraphicsEndImageContext()

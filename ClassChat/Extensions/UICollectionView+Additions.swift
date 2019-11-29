@@ -10,10 +10,16 @@ import UIKit
 
 extension UIScrollView {
   
+  /**
+   Variable for checking if the Chat view is at the bottom
+   */
   var isAtBottom: Bool {
     return contentOffset.y >= verticalOffsetForBottom
   }
   
+  /**
+   Variable to set the distance from the bottom of the scroll view
+   */
   var verticalOffsetForBottom: CGFloat {
     let scrollViewHeight = bounds.height
     let scrollContentSizeHeight = contentSize.height
